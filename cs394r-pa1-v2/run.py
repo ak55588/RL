@@ -24,6 +24,9 @@ def main():
     args.func(args)
     #########################################################################
 
+    import matplotlib.pyplot as plt
+    plt.show()
+
 
 def action_for_bandits(args):
     from lib.visualize.bandit import visualize
