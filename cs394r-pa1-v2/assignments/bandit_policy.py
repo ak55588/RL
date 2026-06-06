@@ -37,9 +37,14 @@ class BanditPolicy(Policy):
             return np.random.randint(len(self.Q))
         
         # Otherwise → exploit (choose best action)
-        return np.argmax(self.Q)
+        #return np.argmax(self.Q)
+        
+        max_val = np.max(self.Q)
+        best_actions = np.flatnonzero(self.Q == max_val)
+        return np.random.choice(best_actions)
 
-        raise NotImplementedError
+
+        #raise NotImplementedError
 
     @override
     def action_prob(self, _: int = None, action: int = None) -> float:
