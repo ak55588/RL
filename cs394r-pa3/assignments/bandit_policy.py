@@ -30,7 +30,17 @@ class BanditPolicy(Policy):
         ### 1. Implement the epsilon-greedy policy for selecting an action.
         ###    With probability epsilon, select a random action.
         ###    Otherwise, select any action with the highest estimated Q value.
-        raise NotImplementedError
+        
+        if np.random.random() < self.epsilon:
+          return np.random.randint(len(self.Q))
+
+        # Exploitation: choose randomly among all greedy actions
+        max_q = np.max(self.Q)
+        greedy_actions = np.flatnonzero(self.Q == max_q)
+
+        return np.random.choice(greedy_actions)
+        
+        #raise NotImplementedError
 
     @override
     def action_prob(self, _: int = None, action: int = None) -> float:

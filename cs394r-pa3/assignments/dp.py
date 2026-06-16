@@ -47,7 +47,31 @@ def value_prediction(
     Q = np.zeros((states, actions))
     """The Q(s, a) function to estimate"""
 
+    while True:
+      delta = 0.0
+
+      for s in range(states):
+        v_old = V[s]
+        v_new = 0.0
+        for a in range(actions):
+          action_prob = pi.action_prob(s, a)
+          q_sa = 0.0
+          for prob, next_state, reward, done in P[s][a]:
+            q_sa += prob * (
+              reward +
+              gamma * V[next_state] * (not done)
+            )
+          Q[s, a] = q_sa
+          v_new += action_prob * q_sa
+
+        V[s] = v_new
+        delta = max(delta, abs(v_old - v_new))
+
+      if delta < theta:
+        break
+
     return V, Q
+
 
 def value_iteration(env: gym.Env, initV: np.ndarray, theta: float, gamma: float) -> Tuple[np.array, Policy]:
     """
@@ -82,4 +106,20 @@ def value_iteration(env: gym.Env, initV: np.ndarray, theta: float, gamma: float)
     P: np.ndarray = env.P
     """Transition Dynamics;  env.P[state][action] returns a list of tuples [(prob, next_state, reward, done)]"""
 
+    while True:
+        delta = 0.0
+        for s in range(nS):
+            v_old = V[s]
+            for a in range(nA):
+                q_sa = 0.0
+                for prob, next_state, reward, done in P[s][a]:
+                    q_sa += prob * (
+                        reward +
+                        gamma * V[next_state] * (not done)
+                    )
+                Q[s, a] = q_sa
+            V[s] = np.max(Q[s])
+            delta = max(delta, abs(v_old - V[s]))
+        if delta < theta:
+            break
     return V, Policy_DeterministicGreedy(Q)

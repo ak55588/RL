@@ -50,6 +50,31 @@ def off_policy_mc_prediction_weighted_importance_sampling(
     #   -  Look at `reversed()` to iterate over a trajectory in reverse order.
     #   -  You can use the `pi.action_prob(state, action)` and `bpi.action_prob(state, action)` methods to get the action probabilities.
 
+    for traj in trajs:
+
+        G = 0.0
+        W = 1.0
+
+        for (s, a, r, s_next) in reversed(traj):
+
+            G = gamma * G + r
+
+            C[s, a] += W
+
+            Q[s, a] += (W / C[s, a]) * (G - Q[s, a])
+            #Q[s, a] += (1.0 / C[s, a]) * (W * G - Q[s, a])
+
+            pi_prob = pi.action_prob(s, a)
+            b_prob = bpi.action_prob(s, a)
+
+            if b_prob == 0:
+                break
+
+            W *= pi_prob / b_prob
+
+            # textbook optimization
+            if W == 0:
+                break
     return Q
 
 def off_policy_mc_prediction_ordinary_importance_sampling(
@@ -103,4 +128,27 @@ def off_policy_mc_prediction_ordinary_importance_sampling(
     #   -  Look at `reversed()` to iterate over a trajectory in reverse order.
     #   -  You can use the `pi.action_prob(state, action)` and `bpi.action_prob(state, action)` methods to get the action probabilities.
 
+    for traj in trajs:
+
+      G = 0.0
+      W = 1.0
+
+      for (s, a, r, s_next) in reversed(traj):
+
+          G = gamma * G + r
+
+          C[s, a] += W
+
+          Q[s, a] += (1.0 / C[s, a]) * (W * G - Q[s, a])
+
+          pi_prob = pi.action_prob(s, a)
+          b_prob = bpi.action_prob(s, a)
+
+          if b_prob == 0:
+              break
+
+          W *= pi_prob / b_prob
+
+          if W == 0:
+                break
     return Q

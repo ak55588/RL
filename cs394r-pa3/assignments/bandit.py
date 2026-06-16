@@ -82,7 +82,13 @@ class SampleAverageMethod(ActionValue):
         ### TODO ###
         ### 1. Update the number of times the selected action has been selected.
         ### 2. Update the estimated Q value for the selected action using the sample-average method (see equation 2.3)
-        raise NotImplementedError
+            # Update action count
+        self.n[a] += 1
+
+        # Sample-average update
+        self.Q_hat[a] += (r - self.Q_hat[a]) / self.n[a]
+        
+        #raise NotImplementedError
 
 
 class ConstantStepSizeMethod(ActionValue):
@@ -101,7 +107,9 @@ class ConstantStepSizeMethod(ActionValue):
         """
         ### TODO ###
         ### 1. Update the estimated Q value for the selected action using the constant step-size method (see equation 2.5)
-        raise NotImplementedError
+        self.Q_hat[a] += self.alpha * (r - self.Q_hat[a])
+        
+        #raise NotImplementedError
 
 class BanditSolverHyperparameters(Hyperparameters):
     """Hyperparameters for the bandit solver."""
@@ -176,6 +184,16 @@ class BanditSolver(Solver):
             ### 2. Step the bandit environment with the selected action
             ###     Hint: make sure to destructure the step method's return values (next_state, r, done, truncated, info)
             ### 3. Update the Q value using the appropriate method
+
+
+            # 1. Select action
+            a = policy.action(0)
+
+            # 2. Take action
+            _, r, done, truncated, info = env.step(a)
+
+            # 3. Update action-value estimate
+            method.update(a, r)
 
             rs.append(r)
             best_action_taken.append(info["ideal_action"])

@@ -23,7 +23,8 @@ class Policy_DeterministicGreedy(Policy):
         """
 
         ### TODO: Implement the action method ###
-        raise NotImplementedError
+        return int(np.argmax(self.Q[state]))
+        #raise NotImplementedError
 
 
     @override
@@ -42,4 +43,5 @@ class Policy_DeterministicGreedy(Policy):
         """
 
         ### TODO: Implement the action_prob method ###
-        raise NotImplementedError
+        return float(action == self.action(state))
+        #raise NotImplementedError
